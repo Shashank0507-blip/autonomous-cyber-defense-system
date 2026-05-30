@@ -1,0 +1,28 @@
+def calculate_severity(confidence: float, flow_bytes_per_sec: float, syn_count: int, port_hits: int) -> str:
+    score = 0
+    score += min(confidence * 4, 4)                                               # max 4 — ML confidence
+    score += min((flow_bytes_per_sec / BASELINE["flow_bytes_per_sec"]) * 0.5, 2)  # max 2 — byte volume
+    score += min((syn_count / BASELINE["syn_flag_count"]) * 0.1, 1)               # max 1 — SYN flood
+    score += min(port_hits * 0.5, 2)                                              # max 2 — port history ← increased
+    score += min(confidence * 1.5, 1)                                             # max 1 — confidence bonus
+    score  = round(min(score, 10), 1)
+
+    if score >= 8:
+        level = "CRITICAL"
+    elif score >= 6:
+        level = "HIGH"
+    elif score >= 4:
+        level = "MEDIUM"
+    else:
+        level = "LOW"
+
+    return f"Severity score: {score}/10 — {level}"
+
+
+def log_blocked_ip(ip: str, reason: str) -> str:
+    """Add an IP to the blocklist file."""
+    timestamp = datetime.now().isoformat()
+    entry     = f"{timestamp} | {ip} | {reason}\n"
+    with open(BLOCKLIST_FILE, "a") as f:
+        f.write(entry)
+    return f"IP {ip} added to blocklist ({BLOCKLIST_FILE}). Reason: {reason}"
