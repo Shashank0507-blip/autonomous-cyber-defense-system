@@ -1,0 +1,159 @@
+[1/3] Loading ML model...
+  Loading XGBoost model...
+  Model loaded. Classes: ['BENIGN', 'Bot', 'DDoS', 'DoS GoldenEye', 'DoS Hulk', 'DoS Slowhttptest', 'DoS slowloris', 'FTP-Patator', 'Heartbleed', 'Infiltration', 'PortScan', 'SSH-Patator', 'Web Attack � Brute Force', 'Web Attack � Sql Injection', 'Web Attack � XSS']
+
+[2/3] Running XGBoost predictions on: Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv
+
+  Loading CSV: Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv
+
+  Rows loaded: 225,745
+  Processing first 500 rows only
+  Running predictions...
+  Predictions complete:
+    Total rows         : 500
+    Attacks detected   : 1
+    Skipped (BENIGN)   : 498
+    Skipped (low conf) : 1
+
+  1 attack(s) detected.
+  Processing first 1 attack(s)...
+
+[3/3] Running agentic pipeline...
+
+════════════════════════════════════════════════════
+  ATTACK #1 — SSH-Patator (78.68% confidence)
+════════════════════════════════════════════════════
+
+>>> INVESTIGATOR AGENT
+
+────────────────────────────────────────────────────
+  [INVESTIGATOR] Starting investigation
+  Attack : SSH-Patator | Confidence : 78.68%
+────────────────────────────────────────────────────
+
+  [Step 1/6]
+  [Thought]    I need external intelligence on the SSH-Patator attack to understand its typical behavior, prevalence, and known indicators.
+  [Action]     lookup_threat_intel(SSH-Patator)
+  [Observe]    Attack: SSH Brute Force
+Description: Automated credential stuffing attack against SSH service
+MITRE TTPs: T1110 - Brute 
+
+  [Step 2/6]
+  [Thought]    I need to see if this destination port (22) has a recent history of similar suspicious activity, which helps gauge whether this is an isolated event or part of a pattern.
+  [Action]     check_port_history(22)
+  [Observe]    Port 22 flagged 11 times previously. HIGH historical risk — recurring target.
+
+  [Step 3/6]
+  [Thought]    
+  [Action]     get_similar_incidents(SSH-Patator, 22)
+  [Observe]    Found 11 previous 'SSH-Patator' incident(s).
+Past decisions: {'auto-resolved': 9, 'approved': 2}
+Latest action taken: MO
+
+  [Step 4/6]
+  [Thought]    I have gathered external threat intel indicating this is a known SSH brute‑force method (MITRE T1110). Port 22 has a high historical risk with 11 prior flags, and there are 11 similar recent incidents, most of which were auto‑resolved but two required manual approval. With a moderate ML confidence (78.68%) and the high packet rate, I now need to compute the overall severity.
+  [Action]     calculate_severity()
+  [Observe]    Severity score: 4.1/10 — MEDIUM
+
+  [Step 5/6]
+  [Conclusion] This is a medium‑severity SSH‑Patator event. The activity matches known brute‑force patterns, has a history of recurrence on port 22, and should be mitigated (e.g., enforce key‑based authentication, rate‑limit attempts, and consider blocking the source IP).
+
+  [INVESTIGATOR DONE]
+  Summary  : This is a medium‑severity SSH‑Patator event. The activity matches known brute‑force patterns, has a history of recurrence on port 22, and should be mitigated (e.g., enforce key‑based authentication, rate‑limit attempts, and consider blocking the source IP).
+  Severity : Severity score: 4.1/10 — MEDIUM
+────────────────────────────────────────────────────
+
+>>> DECISION AGENT
+
+────────────────────────────────────────────────────
+  [DECISION AGENT] Analysing investigation results
+────────────────────────────────────────────────────
+  Calling LLM for decision...
+  [Thought]     The investigation shows a medium‑severity SSH‑Patator attack (score 4.1/10) with 78.68% confidence, recurring activity on port 22, and 11 similar prior incidents. According to the severity guidelines, medium events should be flagged as suspicious and the admin alerted, without immediate blocking.
+  [Verdict]     MONITOR
+  [Actions]     ['flag_suspicious_ip', 'alert_admin']
+  [Reason]      Medium‑severity brute‑force activity warrants monitoring and admin notification rather than an immediate block.
+  [Needs human] False
+
+  Executing 2 action(s)...
+  → Executing: flag_suspicious_ip
+    Result: IP suspicious_host_port_22 flagged as suspicious for SSH-Patator (confidence 78.68%).
+  → Executing: alert_admin
+    Result: Admin alert written to reports\alert_20260509_160247.txt.
+
+  [DECISION AGENT DONE]
+  Verdict      : MONITOR
+  Actions taken: 2
+  Needs human  : False
+────────────────────────────────────────────────────
+
+>>> SYNTHESIS AGENT
+
+────────────────────────────────────────────────────
+  [SYNTHESIS AGENT] Generating incident report
+────────────────────────────────────────────────────
+  Calling LLM for synthesis...
+  [Synthesis done]
+
+════════════════════════════════════════════════════
+  INCIDENT REPORT — 2026-05-09 16:02:54
+════════════════════════════════════════════════════
+  ML Detection  : SSH-Patator (78.68% confidence)
+  Severity      : Severity score: 4.1/10 — MEDIUM
+  Verdict       : MONITOR
+
+────────────────────────────────────────────────────
+  INVESTIGATION TRACE
+────────────────────────────────────────────────────
+  [1] lookup_threat_intel
+      → Attack: SSH Brute Force
+Description: Automated credential stuffing attack agains
+  [2] check_port_history
+      → Port 22 flagged 11 times previously. HIGH historical risk — recurring target.
+  [3] get_similar_incidents
+      → Found 11 previous 'SSH-Patator' incident(s).
+Past decisions: {'auto-resolved': 9
+  [4] calculate_severity
+      → Severity score: 4.1/10 — MEDIUM
+  [✓] Conclusion: This is a medium‑severity SSH‑Patator event. The activity matches known brute‑fo
+
+────────────────────────────────────────────────────
+  ACTIONS EXECUTED
+────────────────────────────────────────────────────
+  [1] flag_suspicious_ip
+      → IP suspicious_host_port_22 flagged as suspicious for SSH-Patator (confidence 78.
+  [2] alert_admin
+      → Admin alert written to reports\alert_20260509_160247.txt.
+
+────────────────────────────────────────────────────
+  SYNTHESIS
+────────────────────────────────────────────────────
+  Summary       : An external host performed rapid SSH credential‑stuffing attempts on port 22, generating ~18 k packets/s and was flagged with 78.68% confidence.
+  Attack Class  : SSH brute‑force (Patator) password‑guessing attack.
+  Recommendation: Enforce key‑based SSH authentication and apply rate‑limiting or block the offending source IP.
+
+════════════════════════════════════════════════════
+  ✓  AUTO-RESOLVED — No human action needed
+════════════════════════════════════════════════════
+
+  Saving incident report...
+  Incident report saved to reports\incident_20260509_160254.json.
+
+  [SYNTHESIS AGENT DONE]
+────────────────────────────────────────────────────
+
+  Pipeline complete for Attack #1
+  Verdict       : MONITOR
+  Human decision: auto-resolved
+  Report saved  : Incident report saved to reports\incident_20260509_160254.json.
+[CyberSchema] ✓ Incident observed: SSH-Patator → MONITOR (approved=False)
+✓ Schema updated for attack #1
+
+════════════════════════════════════════════════════
+  SESSION COMPLETE
+════════════════════════════════════════════════════
+  Attacks processed : 1
+  Reports saved in  : reports/
+  Incident log      : incident_log.json
+  MONITOR      : 1 incident(s)
+════════════════════════════════════════════════════
