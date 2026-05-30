@@ -1,0 +1,39 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual environment
+venv/
+env/
+.venv/
+
+# Notebook junk
+.ipynb_checkpoints/
+
+# Logs
+*.log
+
+# Generated reports
+reports/*.json
+reports/*.txt
+
+# Runtime artifacts
+incident_log.json
+blocked_ips.txt
+quarantine_hosts.txt
+
+# Secrets
+.env
+
+# VSCode
+.vscode/
+
+# OS junk
+.DS_Store
+Thumbs.db
+
+# Model artifacts
+*.pkl
+*.joblib
