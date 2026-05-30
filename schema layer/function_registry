@@ -1,0 +1,14 @@
+FUNCTION_REGISTRY = {
+    "check_port_history"   : check_port_history,
+    "check_flow_rate"      : check_flow_rate,
+    "check_syn_count"      : check_syn_count,
+    "lookup_threat_intel"  : lookup_threat_intel,
+    "get_similar_incidents": get_similar_incidents,
+    "calculate_severity"   : calculate_severity,
+    "log_blocked_ip"       : log_blocked_ip,
+    "quarantine_host"      : quarantine_host,
+    "flag_suspicious_ip"   : flag_suspicious_ip,
+    "alert_admin"          : alert_admin,
+    "log_clear"            : log_clear,
+    "write_incident_report": write_incident_report,
+}
