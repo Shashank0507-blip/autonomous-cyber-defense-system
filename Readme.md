@@ -1,4 +1,4 @@
-# Autonomous-cyber-defense-system — Schema-Grounded Cyber Defense System
+# Autonomous-cyber-defense-system 
 
 A multi-agent AI Security Operations Center (SOC) pipeline combining **XGBoost intrusion detection**, **schema-grounded reasoning**, **LLM investigation agents**, and **autonomous remediation orchestration**.
 
